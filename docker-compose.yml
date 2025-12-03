@@ -1,0 +1,100 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    env_file:
+      - .env
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 30s
+      timeout: 10s
+      retries: 5       
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+      - rabbitmq_log:/var/log/rabbitmq
+    networks:
+      - app-network
+  mongoDB:
+    image: mongo:7.0
+    container_name: mongoDB
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    ports:
+      - "27017:27017"  
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --eval 'db.runCommand({ping: 1})' --username ${MONGO_USERNAME} --password ${MONGO_PASSWORD} --authenticationDatabase admin"] 
+      interval: 10s
+      timeout: 5s
+      retries: 5 
+    volumes:
+      - mongo_data:/data/db  
+    networks:
+      - app-network
+  backend:
+    build:
+      context: ./back-nest
+      dockerfile: Dockerfile
+    container_name: backend
+    env_file:
+      - ./back-nest/.env
+    ports:
+      - "5443:5443"
+    depends_on:
+      mongoDB:
+        condition: service_healthy
+      rabbitmq: 
+        condition: service_healthy  
+    volumes:
+      - ./back-nest:/app
+    networks:
+      - app-network  
+  collectorpython:
+    build:
+      context: ./collector-service
+      dockerfile: Dockerfile
+    container_name: collectorPython
+    env_file:
+      - .env
+    ports:
+      - "5444:5444"  
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./collector-service:/app
+    networks:
+      - app-network
+  worker:
+    build: 
+      context: ./worker
+      dockerfile: Dockerfile
+    container_name: worker
+    env_file:
+      - .env
+    ports:
+      - "5445:5445"
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ./worker:/app
+    networks:
+      - app-network
+
+volumes:
+  rabbitmq_data:
+  rabbitmq_log:
+  mongo_data:  
+
+networks:
+  app-network:  
+    driver: bridge

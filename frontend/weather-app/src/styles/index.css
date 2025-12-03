@@ -1,0 +1,21 @@
+/* src/index.css */
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@theme {
+  /* Colors */
+  --color-primary: #135bec;
+  --color-background-light: #f6f6f8;
+  --color-background-dark: #101622;
+
+  /* Font Family */
+  --font-display: 'Inter', sans-serif;
+
+  /* Border Radius */
+  --radius: 0.25rem;       /* DEFAULT */
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --radius-full: 9999px;
+}
+
+@custom-variant dark (&:is(.dark *));

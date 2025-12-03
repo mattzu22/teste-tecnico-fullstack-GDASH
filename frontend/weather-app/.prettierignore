@@ -1,0 +1,15 @@
+# Ignore artifacts:
+dist
+node_modules
+coverage
+.turbo
+.next
+
+# Ignore config files
+.eslintrc.cjs
+vite.config.ts
+
+# Ignore lock files
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
