@@ -1,3 +1,4 @@
+import { type WeatherData } from '@/interfaces/Weather';
 interface CardStatsProps {
   title: string;
   description: string;
@@ -16,12 +17,27 @@ const ContainerCardsStats = ({ children }: { children: React.ReactNode }) => {
 };
 
 interface StatsSectionProps {
-  stats: CardStatsProps[];
+  logWeather: WeatherData;
 }
-export const StatsSection = ({ stats }: StatsSectionProps) => {
+export const StatsSection = ({ logWeather }: StatsSectionProps) => {
+  const statsCard = [
+    {
+      title: 'Humidity',
+      description: logWeather.humidity_percent + '%',
+    },
+    {
+      title: 'Wind Speed',
+      description: logWeather.wind_speed_ms + 'm/s',
+    },
+    {
+      title: 'Wind Direction',
+      description: logWeather.wind_direction_degrees + '°',
+    },
+  ];
+
   return (
     <ContainerCardsStats>
-      {stats.map((stat, index) => (
+      {statsCard.map((stat, index) => (
         <CardsStats
           key={index}
           title={stat.title}

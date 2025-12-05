@@ -117,11 +117,12 @@ export class WeatherController {
   })
   async exportCsv(
     @Res({ passthrough: true }) res: Response,
-  ): Promise<StreamableFile> {
+  ): Promise<StreamableFile | undefined> {
     const data = await this.weatherService.exportToCsv();
 
     if (!data || data.length === 0) {
-      res.status(404).send('No weather logs found.');
+      res.status(404).send('Nenhum registro de clima encontrado.');
+      return;
     }
 
     const fields = [
@@ -138,16 +139,22 @@ export class WeatherController {
         label: 'Precipitation Probability (%)',
         value: 'precipitation_probability_percent',
       },
+      { label: 'Previsão Horária (JSON)', value: 'hourly_forecast' },
     ];
 
     const parser = new Parser({ fields });
     const csv = parser.parse(data);
 
-    const buffer = Buffer.from(csv, 'utf-8');
+    const BOM = '\uFEFF';
+    const csvWithBOM = BOM + csv;
+    const buffer = Buffer.from(csvWithBOM, 'utf-8');
+
+    const timestamp = new Date().toISOString().split('T')[0];
+    const filename = `weather-logs-${timestamp}.csv`;
 
     res.set({
-      'Content-Type': 'text/csv: charset=utf-8',
-      'Content-Disposition': 'attachment; filename="weather_logs.csv"',
+      'Content-Type': 'text/csv; charset=utf-8',
+      'Content-Disposition': `attachment; filename="${filename}"`,
       'Content-Length': buffer.length.toString(),
     });
 
@@ -183,8 +190,13 @@ export class WeatherController {
   })
   async exportXlsx(
     @Res({ passthrough: true }) res: Response,
-  ): Promise<StreamableFile> {
+  ): Promise<StreamableFile | undefined> {
     const data = await this.weatherService.exportXlsx();
+
+    if (!data || data.length === 0) {
+      res.status(404).send('Nenhum registro de clima encontrado.');
+      return;
+    }
 
     const cleanData = data.map(
       ({ _id, __v, createdAt, updatedAt, ...rest }: WeatherDocument) => rest,
@@ -199,10 +211,13 @@ export class WeatherController {
       bookType: 'xlsx',
     });
 
+    const timestamp = new Date().toISOString().split('T')[0];
+    const filename = `weather-logs-${timestamp}.csv`;
+
     res.set({
       'Content-Type':
         'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'Content-Disposition': 'attachment; filename="weather_logs.xlsx"',
+      'Content-Disposition': `attachment; filename="${filename}"`,
       'Content-Length': xlsxBuffer.length.toString(),
     });
 

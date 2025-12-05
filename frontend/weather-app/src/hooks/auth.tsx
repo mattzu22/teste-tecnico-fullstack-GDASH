@@ -1,20 +1,17 @@
 /* eslint-disable react-hooks/immutability */
 import { createContext, useContext, useEffect, useState } from 'react';
 import { api } from '../lib/api';
+import { type loginProps } from '@/interfaces/Auth';
 
 export const AuthContext = createContext({});
-
-interface loginProps {
-  email: string;
-  password: string;
-}
 
 interface DataProps {
   token?: string;
 }
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  // const token = localStorage.getItem('token');
   const [data, setData] = useState<DataProps>({});
+  const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState(0);
 
@@ -68,10 +65,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       api.defaults.headers.common.Authorization = `Bearer ${token}`;
       setData({ token });
     }
+    setLoading(false);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ login, logout, data, message, status }}>
+    <AuthContext.Provider
+      value={{ login, logout, token: data?.token, loading, message, status }}
+    >
       {children}
     </AuthContext.Provider>
   );

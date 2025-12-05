@@ -61,7 +61,7 @@ export class AuthService {
       );
 
       if (!token || token === null) {
-        throw new UnauthorizedException('Failed to create token.');
+        throw new UnauthorizedException('Falha ao criar token.');
       }
 
       this.logger.log(`Created token: ${token}`);
@@ -79,7 +79,7 @@ export class AuthService {
       }
 
       throw new InternalServerErrorException(
-        'Failed to create token.',
+        'Falha ao criar token.',
         err.message,
       );
     }

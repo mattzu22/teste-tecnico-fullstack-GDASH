@@ -1,5 +1,29 @@
-import { IsString, IsNumber, IsNotEmpty, IsDate } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsNotEmpty,
+  IsDate,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
+
+export class HourlyForecastDto {
+  @IsArray()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  times: string[];
+
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @IsNotEmpty({ each: true })
+  precipitation_probability: number[];
+
+  @IsArray()
+  @IsNumber({}, { each: true })
+  @IsNotEmpty({ each: true })
+  precipitation: number[];
+}
 
 export class CreateWeatherDto {
   @IsNotEmpty()
@@ -25,6 +49,10 @@ export class CreateWeatherDto {
 
   @IsNotEmpty()
   @IsNumber()
+  apparent_temperature: number;
+
+  @IsNotEmpty()
+  @IsNumber()
   humidity_percent: number;
 
   @IsNotEmpty()
@@ -42,4 +70,8 @@ export class CreateWeatherDto {
   @IsNotEmpty()
   @IsNumber()
   precipitation_probability_percent: number;
+
+  @ValidateNested()
+  @Type(() => HourlyForecastDto)
+  hourly_forecast: HourlyForecastDto;
 }

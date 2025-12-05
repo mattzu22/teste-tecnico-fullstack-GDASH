@@ -1,4 +1,19 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+
+@Schema()
+export class HourlyForecast extends Document {
+  @Prop([String])
+  times: string[];
+
+  @Prop([Number])
+  precipitation_probability: number[];
+
+  @Prop([Number])
+  precipitation: number[];
+}
+export const HourlyForecastSchema =
+  SchemaFactory.createForClass(HourlyForecast);
 
 @Schema({
   timestamps: true,
@@ -21,6 +36,9 @@ export class Weather {
   temperature_celsius: number;
 
   @Prop({ required: true })
+  apparent_temperature: number;
+
+  @Prop({ required: true })
   humidity_percent: number;
 
   @Prop({ required: true })
@@ -34,6 +52,9 @@ export class Weather {
 
   @Prop({ required: true })
   precipitation_probability_percent: number;
+
+  @Prop({ type: HourlyForecastSchema })
+  hourly_forecast: HourlyForecast;
 }
 
 export const WeatherSchema = SchemaFactory.createForClass(Weather);

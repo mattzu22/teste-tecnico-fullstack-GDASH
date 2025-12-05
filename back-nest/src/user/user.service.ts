@@ -28,16 +28,10 @@ export class UserService {
     try {
       const { email, name, password } = body;
 
-      if (!email || !name || !password) {
-        throw new NotFoundException(
-          'Missing required fields: email, name, or password',
-        );
-      }
-
       const emailExisting = await this.findByEmail(email);
 
       if (emailExisting) {
-        throw new ConflictException('Email already registered.');
+        throw new ConflictException('O email já está cadastrado.');
       }
 
       const passwordHash = await this.bcryptService.hashPassword(password);
@@ -53,7 +47,10 @@ export class UserService {
 
       this.logger.log(`Created user: ${createdUser._id.toString()}`);
 
-      return { message: 'User created', userId: createdUser._id.toString() };
+      return {
+        message: 'Usuário criado',
+        userId: createdUser._id.toString(),
+      };
     } catch (error) {
       const err = error as Error;
 
@@ -69,7 +66,7 @@ export class UserService {
       }
 
       throw new InternalServerErrorException(
-        'Failed to create user.',
+        'Falha ao criar usuário.',
         err.message,
       );
     }
@@ -79,7 +76,7 @@ export class UserService {
       const users = await this.userService.find().exec();
 
       if (users.length === 0) {
-        throw new NotFoundException('No users found.');
+        throw new NotFoundException('Nenhum usuário encontrado.');
       }
 
       const dateUsers = users.map((user) => ({
@@ -88,13 +85,13 @@ export class UserService {
         email: user.email,
       }));
 
-      this.logger.log(`found ${users.length} users.`);
+      this.logger.log(`${users.length} usuários encontrados.`);
 
       return dateUsers;
     } catch (error) {
       const err = error as Error;
 
-      this.logger.error(`Failed to list users: ${err.message}`, {
+      this.logger.error(`Falha ao listar usuários: ${err.message}`, {
         stack: err.stack,
       });
 
@@ -102,7 +99,7 @@ export class UserService {
         throw error;
       }
 
-      throw new InternalServerErrorException('Failed to list users.');
+      throw new InternalServerErrorException('Falha ao listar usuários.');
     }
   }
   async update(body: UpdateUserDto, id: string): Promise<{ message: string }> {
@@ -117,7 +114,7 @@ export class UserService {
       if (newPassword) {
         if (!password) {
           throw new ConflictException(
-            'To set a new password, the current password must be provided.',
+            'Para definir uma nova senha, a senha atual deve ser fornecida.',
           );
         }
 
@@ -127,7 +124,7 @@ export class UserService {
         );
 
         if (!comparePassword) {
-          throw new ConflictException('Current password is incorrect.');
+          throw new ConflictException('A senha atual está incorreta.');
         }
 
         updateData.passwordHash =
@@ -135,14 +132,14 @@ export class UserService {
       }
 
       if (Object.keys(updateData).length === 0) {
-        return { message: 'No fields to update.' };
+        return { message: 'Nenhum campo para atualizar.' };
       }
 
       await this.userService.updateOne({ _id: id }, updateData).exec();
 
       this.logger.log(`Updated user: ${id}`);
 
-      return { message: 'User updated.' };
+      return { message: 'Usuário atualizado.' };
     } catch (error) {
       const err = error as Error;
 
@@ -158,7 +155,7 @@ export class UserService {
       }
 
       throw new InternalServerErrorException(
-        'Failed to update user.',
+        'Falha ao atualizar usuário.',
         err.message,
       );
     }
@@ -171,7 +168,7 @@ export class UserService {
 
       this.logger.log(`Deleted user: ${id}`);
 
-      return { message: 'User deleted.' };
+      return { message: 'Usuário deletado.' };
     } catch (error) {
       const err = error as Error;
 
@@ -184,7 +181,7 @@ export class UserService {
       }
 
       throw new InternalServerErrorException(
-        'Failed to delete user.',
+        'Falha ao deletar usuário.',
         err.message,
       );
     }
@@ -194,7 +191,7 @@ export class UserService {
     const user = await this.userRepository.findById(id);
 
     if (!user) {
-      throw new NotFoundException('User not found.');
+      throw new NotFoundException('Usuário não encontrado.');
     }
 
     return user;

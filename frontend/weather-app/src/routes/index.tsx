@@ -1,10 +1,25 @@
-import { BrowserRouter } from 'react-router';
-import { AppRoutes } from './app.routes';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { WeatherDashboard } from '../pages/Dashboard';
+import Signin from '../pages/Auth/Signin';
+import { PrivateRoute } from './PrivateRoute';
+import Signup from '@/pages/Auth/Signup';
 
-export const Routes = () => {
+export const AppRoutes = () => {
   return (
     <BrowserRouter>
-      <AppRoutes />
+      <Routes>
+        <Route path="/" element={<Signin />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <WeatherDashboard />
+            </PrivateRoute>
+          }
+        />
+        {/* <Route path="*" element={<Navigate to="/" />} /> */}
+      </Routes>
     </BrowserRouter>
   );
 };

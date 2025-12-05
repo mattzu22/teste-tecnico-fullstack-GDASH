@@ -8,6 +8,7 @@ Este é um sistema de monitoramento climático full-stack construído com uma ar
 - **Processamento Assíncrono com Fila:** Os dados coletados são enviados para uma fila **RabbitMQ**, garantindo que nenhum dado seja perdido.
 - **Consumidor Robusto:** Um worker em **Go** (`worker`) consome os dados da fila, processa-os e os envia para a API principal.
 - **API REST Completa:** Uma API em **NestJS** (`back-nest`) com CRUD de usuários, autenticação JWT e endpoints para visualização e exportação de dados climáticos.
+- **Frontend Interativo:** Uma interface de usuário em **React** (`frontend`) para visualização dos dados, com gráficos, autenticação e um design moderno.
 - **Armazenamento:** Os dados de usuários e de clima são persistidos em um banco de dados **MongoDB**.
 - **Containerização:** Todos os serviços são orquestrados e gerenciados com **Docker** e **Docker Compose**.
 
@@ -37,8 +38,17 @@ O fluxo de dados do sistema é o seguinte:
 -   **`collector-service` (Python):** Faz requisições periódicas à API [Open-Meteo](https://open-meteo.com/) para obter dados climáticos. Os dados coletados são publicados na fila do RabbitMQ.
 -   **`worker` (Go):** Consome as mensagens da fila, formata os dados e os envia para o endpoint `/api/weather/logs` da API NestJS.
 -   **`back-nest` (NestJS):** A API principal. Gerencia usuários, autenticação e os dados climáticos.
+-   **`frontend` (React):** A interface do usuário, que consome a API `back-nest` para exibir os dados climáticos em um dashboard interativo.
 -   **`rabbitmq`:** O message broker, responsável pela comunicação assíncrona.
 -   **`mongoDB`:** O banco de dados NoSQL para persistência dos dados.
+
+## 🎨 Estilização e Variáveis
+
+O projeto utiliza **Tailwind CSS** para estilização, com uma abordagem de "utility-first". As variáveis de cores e fontes são centralizadas em arquivos CSS para facilitar a manutenção e a consistência do design.
+
+-   **`frontend/weather-app/src/styles/colors.css`**: Contém as variáveis de cores utilizadas no projeto.
+-   **`frontend/weather-app/src/styles/fonts.css`**: Contém as variáveis de fontes utilizadas no projeto.
+-   **`frontend/weather-app/src/styles/index.css`**: O arquivo principal de estilos, que importa as variáveis e as configurações do Tailwind.
 
 ## ⚙️ Como Executar o Projeto
 
@@ -62,7 +72,9 @@ Para executar o projeto localmente, siga estas etapas:
     ```sh
     docker-compose up -d --build
     ```
-6.  Os serviços estarão disponíveis em seus respectivos ports. A API principal estará em `http://localhost:5443`.
+6.  Os serviços estarão disponíveis em seus respectivos ports.
+    -   **API (back-nest):** `http://localhost:5443`
+    -   **Frontend (weather-app):** `http://localhost:5173`
 
 ## 🔐 Autenticação
 

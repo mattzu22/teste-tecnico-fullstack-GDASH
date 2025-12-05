@@ -23,7 +23,7 @@ export class WeatherService {
 
       this.logger.log(`Created weather log" ${created.id}`);
 
-      return { message: 'Weather log created successfully' };
+      return { message: 'Registro de clima criado com sucesso' };
     } catch (error) {
       const err = error as Error;
 
@@ -32,7 +32,7 @@ export class WeatherService {
       });
 
       throw new InternalServerErrorException(
-        'Failed to create weather log.',
+        'Falha ao criar registro de clima.',
         err.message,
       );
     }
@@ -43,7 +43,7 @@ export class WeatherService {
       const response = await this.weatherModel.find().exec();
 
       if (!response || response.length === 0) {
-        throw new NotFoundException('No weather logs found.');
+        throw new NotFoundException('Nenhum registro de clima encontrado.');
       }
 
       this.logger.log(`Searched ${response.length} weather logs.`);
@@ -60,7 +60,9 @@ export class WeatherService {
         throw error;
       }
 
-      throw new InternalServerErrorException('Failed to search weather logs.');
+      throw new InternalServerErrorException(
+        'Falha ao pesquisar registros de clima.',
+      );
     }
   }
 
@@ -83,7 +85,7 @@ export class WeatherService {
       });
 
       throw new InternalServerErrorException(
-        'Failed to export weather logs to CSV.',
+        'Falha ao exportar registros de clima para CSV.',
       );
     }
   }
@@ -107,7 +109,7 @@ export class WeatherService {
       });
 
       throw new InternalServerErrorException(
-        'Failed to export weather logs to Xlsx.',
+        'Falha ao exportar registros de clima para Xlsx.',
       );
     }
   }

@@ -20,12 +20,16 @@ export class UserSeed implements Seeder {
   async seed(): Promise<any> {
     await this.userModel.deleteMany({});
 
-    const passwordHash = await this.bcryptService.hashPassword('Admin@123');
+    const passwordHash = await this.bcryptService.hashPassword(
+      process.env.PASSWORD_DEFAULT || '123456',
+    );
+    const userName = process.env.USERNAME_DEFAULT || 'Admin';
+    const email = process.env.EMAIL_DEFAULT || 'admin@example.com';
 
     const users = [
       {
-        name: 'Admin',
-        email: 'admin@example.com',
+        name: userName,
+        email: email,
         passwordHash: passwordHash,
       },
     ];

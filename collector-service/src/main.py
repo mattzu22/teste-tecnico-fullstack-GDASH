@@ -31,8 +31,8 @@ def main():
             else:
                 print(f"{datetime.now()} - Nenhum dado foi obtido da API nessa requisição.")
 
-            print(f"{datetime.now()} - Aguardando 1 hora para próxima requisição.")
-            time.sleep(3600)
+            print(f"{datetime.now()} - Aguardando 15 minutos para próxima requisição.")
+            time.sleep(900)
             
         except KeyboardInterrupt:
             print(f"\n{datetime.now()} - Desligando o serviço...")

@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Input } from '@/components/ui/input';
@@ -10,27 +10,23 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
 } from '@/components/ui/form';
 
-import { Cloud } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 
 import { toast, Toaster } from 'sonner';
-import { loginSchema, type LoginFormData } from '@/lib/auth-schema';
-import type z from 'zod';
+import { SigninSchema, type SigninFormData } from '@/lib/auth-schema';
+import { useNavigate } from 'react-router';
+import { type UseAuthProps } from '@/interfaces/Auth';
+import { HeaderAuth } from '../components/layout/Header';
 
-interface UseAuthProps {
-  login: (data: LoginFormData) => Promise<void>;
-  message: string;
-  status: number;
-}
-
-export default function LoginPage() {
+export default function Signin() {
   const { login, message, status } = useAuth() as UseAuthProps;
+  const navigate = useNavigate();
 
-  const form = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<SigninFormData>({
+    resolver: zodResolver(SigninSchema),
     defaultValues: {
       email: '',
       password: '',
@@ -40,16 +36,17 @@ export default function LoginPage() {
   useEffect(() => {
     if (status >= 201 && status < 300) {
       toast.success('Login bem-sucedido!');
+      navigate('/dashboard');
     } else if (message) {
       toast.error(message);
     }
-  }, [message, status]);
+  }, [message, status, navigate]);
 
-  const onSubmit = async (values: LoginFormData) => {
+  const onSubmit = async (values: SigninFormData): Promise<void> => {
     await login({ email: values.email, password: values.password });
   };
 
-  const onErrorSubmit = (errors: z.infer<typeof loginSchema>) => {
+  const onErrorSubmit = (errors: FieldErrors<SigninFormData>): void => {
     for (const field in errors) {
       const errorMessage = errors[field as keyof typeof errors]?.message;
       if (errorMessage) {
@@ -59,23 +56,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full flex-col bg-[#101622]">
+    <div className="relative flex min-h-screen w-full flex-col bg-background-dark">
       <Toaster />
       <div className="flex flex-1 flex-col justify-center px-6 py-12 lg:px-8 mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-          {/* Icon */}
-          <div className="flex justify-center">
-            <Cloud className="h-16 w-16 text-[#135bec]" strokeWidth={1.5} />
-          </div>
-
-          {/* Header */}
-          <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight  text-white">
-            Sign in to your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-slate-500">
-            Welcome back!
-          </p>
-        </div>
+        <HeaderAuth
+          title="Faça login na sua conta"
+          subtitle="Bem-vindo de volta!"
+        />
 
         <Form {...form}>
           <form
@@ -88,18 +75,17 @@ export default function LoginPage() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email ou nome de usuário</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
                       id="email"
                       type="email"
                       autoComplete="email"
                       placeholder="seu@email.com"
-                      className="block w-full rounded-md border-0 bg-white/5 px-3 py-2.5 text-white shadow-sm ring-1 ring-inset placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-[#135bec] ring-slate-700 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 bg-white/5 px-3 py-2.5 text-white shadow-sm ring-1 ring-inset placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary ring-slate-700 sm:text-sm sm:leading-6"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -111,12 +97,12 @@ export default function LoginPage() {
               render={({ field }) => (
                 <FormItem>
                   <div className="flex items-center justify-between">
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>Senha</FormLabel>
                     <a
                       href="#"
-                      className="text-sm font-semibold hover:text-[#135bec]/90 text-blue-400"
+                      className="text-sm font-semibold hover:text-primary/90 text-primary"
                     >
-                      Forgot password?
+                      Esqueceu a senha?
                     </a>
                   </div>
                   <FormControl>
@@ -125,11 +111,10 @@ export default function LoginPage() {
                       type="password"
                       autoComplete="current-password"
                       placeholder="Sua senha"
-                      className="block w-full rounded-md border-0 bg-white/5 px-3 py-2.5shadow-sm ring-1 ring-inset ring-slate-300 placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-[#135bec] text-white ring-slate-700 sm:text-sm sm:leading-6"
+                      className="block w-full rounded-md border-0 bg-white/5 px-3 py-2.5shadow-sm ring-1 ring-inset  placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary text-white ring-slate-700 sm:text-sm sm:leading-6"
                       {...field}
                     />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -138,20 +123,24 @@ export default function LoginPage() {
             <Button
               type="submit"
               disabled={form.formState.isSubmitting}
-              className="flex w-full justify-center rounded-lg bg-[#135bec] px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-[#135bec]/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#135bec]"
+              className="flex w-full justify-center rounded-lg bg-primary px-3 py-3 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-primary/90 focus-visible:outline  focus-visible:outline-offset-2 focus-visible:outline-primary"
             >
-              {form.formState.isSubmitting ? 'Entrando...' : 'Login'}
+              {form.formState.isSubmitting ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                'Entrar'
+              )}
             </Button>
           </form>
 
           {/* Sign Up Link */}
           <p className="mt-10 text-center text-sm text-slate-400">
-            Not a member?{' '}
+            Não é membro?{' '}
             <a
-              href="#"
-              className="font-semibold leading-6 hover:text-[#135bec]/90 text-blue-400"
+              href="/signup"
+              className="font-semibold leading-6 hover:text-primary/90 text-primary"
             >
-              Sign Up
+              Cadastrar
             </a>
           </p>
         </Form>

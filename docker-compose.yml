@@ -89,6 +89,19 @@ services:
       - ./worker:/app
     networks:
       - app-network
+  frontend:
+    build:
+      context: ./frontend/weather-app
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/weather-app:/app
+    networks:
+      - app-network
 
 volumes:
   rabbitmq_data:
