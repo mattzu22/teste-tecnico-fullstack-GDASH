@@ -1,4 +1,6 @@
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+
 import { toast } from 'sonner';
 
 import { Header } from './components/layout/Header';
@@ -8,12 +10,11 @@ import { StatsSection } from './components/section/CardStats';
 import { HistoricalData } from './components/section/HistoricalData';
 import { TemperatureChart } from './components/features/TemperatureChart';
 import { ProbbilityChart } from './components/features/ProbbilityChart';
+import { SkeletonDashboard } from './components/layout/SkeletonDashboard';
 
 import { getWeatherInfo } from '@/utils/weather';
 import { getWeatherLogs } from '@/service/weatherService';
 import { type WeatherData } from '@/interfaces/Weather';
-import { useEffect, useState } from 'react';
-import { SkeletonDashboard } from './components/layout/SkeletonDashboard';
 
 export const WeatherDashboard = () => {
   const [logWeather, setLogWeather] = useState<WeatherData>({
@@ -94,7 +95,6 @@ export const WeatherDashboard = () => {
 
   return (
     <div className="min-h-screen bg-slate-900 text-white font-sans">
-      {/* Header */}
       <Header
         city={logWeather.city}
         state={logWeather.state}
@@ -102,7 +102,6 @@ export const WeatherDashboard = () => {
       />
 
       <div className="max-w-7xl mx-auto px-4 py-6 space-y-6">
-        {/* Main Weather Card */}
         <div className="bg-gradient-to-br from-slate-800 to-slate-900 rounded-2xl p-8 shadow-2xl border border-slate-700">
           <div className="flex flex-col items-center text-center">
             {logWeather.weather_code !== undefined && (
@@ -118,15 +117,11 @@ export const WeatherDashboard = () => {
           </div>
         </div>
 
-        {/* Stats Grid */}
         <StatsSection logWeather={logWeather} />
 
-        {/* AI Insight */}
         <InsightAI />
 
-        {/* Charts */}
         <div className="flex flex-wrap gap-4">
-          {/* Temperature Chart */}
           <TemperatureChart
             logsWeathers={logsWeathers}
             logWeather={logWeather}

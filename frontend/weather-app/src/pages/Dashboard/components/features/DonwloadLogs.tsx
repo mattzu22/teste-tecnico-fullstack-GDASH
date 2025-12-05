@@ -33,7 +33,6 @@ export const DonwloadLogs = () => {
 
   return (
     <div className="fixed bottom-6 right-6 z-50" ref={ref}>
-      {/* Botão principal */}
       <button
         onClick={() => setOpen((prev) => !prev)}
         className="bg-blue-600 hover:bg-blue-700 text-white rounded-full p-4 shadow-[0_8px_25px_-4px_rgba(0,0,0,0.35)] transition-all hover:scale-110 active:scale-95"
@@ -41,7 +40,6 @@ export const DonwloadLogs = () => {
         <Download size={22} />
       </button>
 
-      {/* Popup */}
       {open && (
         <div
           className="
@@ -58,7 +56,6 @@ export const DonwloadLogs = () => {
           </p>
 
           <div className="flex flex-col gap-2">
-            {/* CSV */}
             <button
               onClick={downloadCSV}
               className="
@@ -81,7 +78,6 @@ export const DonwloadLogs = () => {
               <span className="text-sm text-gray-200">Baixar CSV</span>
             </button>
 
-            {/* XLSX */}
             <button
               onClick={downloadXLSX}
               className="

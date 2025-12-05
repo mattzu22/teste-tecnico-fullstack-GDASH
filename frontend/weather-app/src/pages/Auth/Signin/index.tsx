@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -12,7 +12,7 @@ import {
   FormLabel,
 } from '@/components/ui/form';
 
-import { Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 
 import { toast, Toaster } from 'sonner';
@@ -23,6 +23,7 @@ import { HeaderAuth } from '../components/layout/Header';
 
 export default function Signin() {
   const { login, message, status } = useAuth() as UseAuthProps;
+  const [isVisible, setIsVisible] = useState(false);
   const navigate = useNavigate();
 
   const form = useForm<SigninFormData>({
@@ -69,7 +70,6 @@ export default function Signin() {
             onSubmit={form.handleSubmit(onSubmit, onErrorSubmit)}
             className="space-y-6"
           >
-            {/* Email Input */}
             <FormField
               control={form.control}
               name="email"
@@ -90,7 +90,6 @@ export default function Signin() {
               )}
             />
 
-            {/* Password Input */}
             <FormField
               control={form.control}
               name="password"
@@ -106,20 +105,32 @@ export default function Signin() {
                     </a>
                   </div>
                   <FormControl>
-                    <Input
-                      id="password"
-                      type="password"
-                      autoComplete="current-password"
-                      placeholder="Sua senha"
-                      className="block w-full rounded-md border-0 bg-white/5 px-3 py-2.5shadow-sm ring-1 ring-inset  placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary text-white ring-slate-700 sm:text-sm sm:leading-6"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={isVisible ? 'text' : 'password'}
+                        autoComplete="current-password"
+                        placeholder="Sua senha"
+                        className="block w-full rounded-md border-0 bg-white/5 px-3 py-2.5shadow-sm ring-1 ring-inset  placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary text-white ring-slate-700 sm:text-sm sm:leading-6"
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setIsVisible(!isVisible)}
+                        className="absolute right-3 top-2.5"
+                      >
+                        {isVisible ? (
+                          <Eye size={17} className="text-slate-400" />
+                        ) : (
+                          <EyeOff size={17} className="text-slate-400" />
+                        )}
+                      </button>
+                    </div>
                   </FormControl>
                 </FormItem>
               )}
             />
 
-            {/* Submit Button */}
             <Button
               type="submit"
               disabled={form.formState.isSubmitting}
@@ -133,7 +144,6 @@ export default function Signin() {
             </Button>
           </form>
 
-          {/* Sign Up Link */}
           <p className="mt-10 text-center text-sm text-slate-400">
             Não é membro?{' '}
             <a

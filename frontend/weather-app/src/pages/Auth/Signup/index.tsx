@@ -1,4 +1,4 @@
-import { Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
@@ -18,8 +18,12 @@ import { useNavigate } from 'react-router';
 import { createUser } from '@/service/userService';
 import { HeaderAuth } from '../components/layout/Header';
 import type { CreateUserResponse } from '@/interfaces/User';
+import { useState } from 'react';
 
 export default function Signup() {
+  const [isVisible, setIsVisible] = useState(false);
+  const [isVisibleConfirmPassword, setIsVisibleConfirmPassword] =
+    useState(false);
   const navigate = useNavigate();
 
   const form = useForm<SignupFormData>({
@@ -89,7 +93,7 @@ export default function Signup() {
                 </FormItem>
               )}
             />
-            {/* Email Input */}
+
             <FormField
               control={form.control}
               name="email"
@@ -110,7 +114,6 @@ export default function Signup() {
               )}
             />
 
-            {/* Password Input */}
             <FormField
               control={form.control}
               name="password"
@@ -119,14 +122,27 @@ export default function Signup() {
                   <FormLabel>Senha</FormLabel>
 
                   <FormControl>
-                    <Input
-                      id="password"
-                      type="password"
-                      autoComplete="current-password"
-                      placeholder="Sua senha"
-                      className="block w-full rounded-md border-0 bg-white/5 px-3 py-2.5shadow-sm ring-1 ring-inset  placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary text-white ring-slate-700 sm:text-sm sm:leading-6"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="password"
+                        type={isVisible ? 'text' : 'password'}
+                        autoComplete="current-password"
+                        placeholder="Sua senha"
+                        className="block w-full rounded-md border-0 bg-white/5 px-3 py-2.5shadow-sm ring-1 ring-inset  placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary text-white ring-slate-700 sm:text-sm sm:leading-6"
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-3 top-2.5"
+                        onClick={() => setIsVisible(!isVisible)}
+                      >
+                        {isVisible ? (
+                          <Eye size={17} className="text-slate-400" />
+                        ) : (
+                          <EyeOff size={17} className="text-slate-400" />
+                        )}
+                      </button>
+                    </div>
                   </FormControl>
                 </FormItem>
               )}
@@ -142,20 +158,34 @@ export default function Signup() {
                   </FormLabel>
 
                   <FormControl>
-                    <Input
-                      id="confirm-password"
-                      type="password"
-                      autoComplete="confirm-Password"
-                      placeholder="Confirme sua senha"
-                      className="block w-full rounded-md border-0 bg-white/5 px-3 py-2.5shadow-sm ring-1 ring-inset  placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary text-white ring-slate-700 sm:text-sm sm:leading-6"
-                      {...field}
-                    />
+                    <div className="relative">
+                      <Input
+                        id="confirm-password"
+                        type={isVisibleConfirmPassword ? 'text' : 'password'}
+                        autoComplete="confirm-Password"
+                        placeholder="Confirme sua senha"
+                        className="block w-full rounded-md border-0 bg-white/5 px-3 py-2.5shadow-sm ring-1 ring-inset  placeholder:text-slate-400 focus:ring-2 focus:ring-inset focus:ring-primary text-white ring-slate-700 sm:text-sm sm:leading-6"
+                        {...field}
+                      />
+                      <button
+                        type="button"
+                        className="absolute right-3 top-2.5"
+                        onClick={() =>
+                          setIsVisibleConfirmPassword(!isVisibleConfirmPassword)
+                        }
+                      >
+                        {isVisibleConfirmPassword ? (
+                          <Eye size={17} className="text-slate-400" />
+                        ) : (
+                          <EyeOff size={17} className="text-slate-400" />
+                        )}
+                      </button>
+                    </div>
                   </FormControl>
                 </FormItem>
               )}
             />
 
-            {/* Submit Button */}
             <Button
               type="submit"
               disabled={form.formState.isSubmitting}
@@ -169,7 +199,6 @@ export default function Signup() {
             </Button>
           </form>
 
-          {/* Sign Up Link */}
           <p className="mt-10 text-center text-sm text-slate-400">
             Já é membro?{' '}
             <a
