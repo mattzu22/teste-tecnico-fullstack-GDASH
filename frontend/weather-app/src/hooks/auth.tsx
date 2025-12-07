@@ -2,15 +2,29 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { api } from '../lib/api';
 import { type loginProps } from '@/interfaces/Auth';
+import { jwtDecode } from 'jwt-decode';
+import type { DecodedUser } from '@/interfaces/Auth';
 
-export const AuthContext = createContext({});
-
-interface DataProps {
-  token?: string;
+interface AuthContextData {
+  login: (credentials: loginProps) => Promise<void>;
+  logout: () => void;
+  user: DecodedUser | null;
+  token: string | null;
+  loading: boolean;
+  message: string;
+  status: number;
 }
 
+// Interface for the internal state
+interface AuthState {
+  token: string | null;
+  user: DecodedUser | null;
+}
+
+export const AuthContext = createContext({} as AuthContextData);
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [data, setData] = useState<DataProps>({});
+  const [data, setData] = useState<AuthState>({ token: null, user: null });
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState(0);
@@ -23,16 +37,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       const { token } = response.data;
+      const user: DecodedUser = jwtDecode(token);
 
       localStorage.setItem('token', token);
-
       api.defaults.headers.common.Authorization = `Bearer ${token}`;
+
+      setData({ token, user });
 
       setMessage('Login realizado com sucesso!');
       setStatus(response.status);
       setTimeoutMessage();
-
-      setData({ token });
     } catch (error: Error | any) {
       if (error.response) {
         setMessage(error.response.data.message);
@@ -45,10 +59,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setTimeoutMessage();
     }
   }
+
   function logout() {
     localStorage.removeItem('token');
 
-    setData({});
+    setData({ token: null, user: null });
   }
 
   function setTimeoutMessage() {
@@ -63,14 +78,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (token) {
       api.defaults.headers.common.Authorization = `Bearer ${token}`;
-      setData({ token });
+      const user: DecodedUser = jwtDecode(token);
+      setData({ token, user });
     }
     setLoading(false);
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ login, logout, token: data?.token, loading, message, status }}
+      value={{
+        login,
+        logout,
+        user: data.user,
+        token: data.token,
+        loading,
+        message,
+        status,
+      }}
     >
       {children}
     </AuthContext.Provider>

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LogOut, MapPin, RefreshCw } from 'lucide-react';
+import { LogOut, MapPin, RefreshCw, User } from 'lucide-react';
 import { useAuth } from '@/hooks/auth';
 import { useNavigate } from 'react-router';
 
@@ -25,6 +25,10 @@ export const Header = ({ city, state, fetchWeatherLogs }: HeaderProps) => {
     navigate('/');
   };
 
+  const handleProfile = () => {
+    navigate('/profile');
+  };
+
   return (
     <header className="sticky top-0 z-10 bg-slate-900/95 backdrop-blur-sm border-b border-slate-800 px-4 py-3">
       <div className="flex items-center justify-between max-w-7xl mx-auto">
@@ -33,15 +37,19 @@ export const Header = ({ city, state, fetchWeatherLogs }: HeaderProps) => {
           <h1 className="text-lg font-bold">
             {city}, {state}
           </h1>
-        </div>
-
-        <div className="flex gap-3.5 items-center ">
-          <button
+           <button
             onClick={handleRefresh}
             className={`p-2 hover:bg-slate-800 rounded-lg transition-all ${isRefreshing ? 'animate-spin' : ''}`}
           >
             <RefreshCw size={20} />
           </button>
+        </div>
+
+        <div className="flex gap-3.5 items-center ">
+          <button onClick={handleProfile}>
+            <User size={20} />
+          </button>
+          
           <button
             onClick={handleLogout}
             className="p-2 hover:bg-slate-800 rounded-lg"

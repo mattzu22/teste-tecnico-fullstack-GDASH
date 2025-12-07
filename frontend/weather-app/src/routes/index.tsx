@@ -3,6 +3,7 @@ import { WeatherDashboard } from '../pages/Dashboard';
 import Signin from '../pages/Auth/Signin';
 import { PrivateRoute } from './PrivateRoute';
 import Signup from '@/pages/Auth/Signup';
+import UserProfile from '@/pages/UserProfile';
 
 export const AppRoutes = () => {
   return (
@@ -17,6 +18,12 @@ export const AppRoutes = () => {
               <WeatherDashboard />
             </PrivateRoute>
           }
+        />
+        <Route path="/profile" element={
+          <PrivateRoute>
+            <UserProfile />
+          </PrivateRoute>
+          } 
         />
       </Routes>
     </BrowserRouter>

@@ -53,7 +53,6 @@ func main() {
 
 		for msg := range msgs {
 			log.Println("\nNova mensagem recebida")
-			// log.Printf("Tamanho: %d bytes", len(msg.Body))
 
 			var data models.WeatherData
 			log.Println("Deserializando JSON...")

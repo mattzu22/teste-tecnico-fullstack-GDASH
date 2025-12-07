@@ -8,7 +8,9 @@ from config import (
     LONGITUDE,
     API_URL,
     MAX_RETRIES,
-    WEATHER_CITY
+    WEATHER_CITY,
+    WEATHER_STATE,
+    WEATHER_COUNTRY
 )
 
 def fetch_weather_data():
@@ -32,25 +34,20 @@ def fetch_weather_data():
             
             current_weather = weather_data.get("current", {})
             hourly_weather = weather_data.get("hourly", {})
-            
-            # Hora atual
-            current_time = current_weather.get("time")  # Ex: "2024-12-04T15:00"
 
-            # Encontra o índice da hora atual
+            current_time = current_weather.get("time")
+
             hourly_times = hourly_weather.get("time", [])
             current_index = hourly_times.index(current_time) if current_time in hourly_times else 0
 
-            # Probabilidade de chuva ATUAL (hora mais próxima)
             current_precipitation_prob = hourly_weather.get("precipitation_probability", [])[current_index]
 
-            # Próximas 24 horas
             next_24h_probabilities = hourly_weather.get("precipitation_probability", [])[current_index:current_index+24]
 
-            # Dados da API
             DATA_WEATHER = {
                 "city": WEATHER_CITY,
-                "state": "RN",
-                "country": "Brazil",
+                "state": WEATHER_STATE,
+                "country": WEATHER_COUNTRY,
                 "timestamp": current_weather.get("time"),
                 "temperature_celsius": current_weather.get("temperature_2m"),
                 "apparent_temperature": current_weather.get("apparent_temperature"),
@@ -59,7 +56,6 @@ def fetch_weather_data():
                 "wind_direction_degrees": current_weather.get("wind_direction_10m"),
                 "weather_code": current_weather.get("weather_code"),
                     
-                # ↓ DADOS HORÁRIOS (probabilidade de chuva)
                 "precipitation_probability_percent": current_precipitation_prob,
                 "hourly_forecast": {
                     "times": hourly_times[current_index:current_index+24],
