@@ -117,7 +117,7 @@ export const FormProfile = () => {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Senha Antiga</FormLabel>
+              <FormLabel>Senha Atual</FormLabel>
 
               <FormControl>
                 <div className="relative">
